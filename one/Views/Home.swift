@@ -49,10 +49,15 @@ struct HomeView: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(viewModel.videos) { video in
-                            VideoCard(
-                                title: video.title,
-                                coverURL: video.coverURL
-                            )
+                            NavigationLink {
+                                MovieDetailView(video: video)
+                            } label: {
+                                VideoCard(
+                                    title: video.title,
+                                    coverURL: video.coverURL
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal, 16)
