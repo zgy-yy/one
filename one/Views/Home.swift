@@ -68,6 +68,12 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
+        .onAppear {
+            print("hello")
+            if let encrypted = try? APICrypto.aesDecrypt("") {
+                print(encrypted)
+            }
+        }
     }
 
     private func placeholderContent(title: String, icon: String) -> some View {

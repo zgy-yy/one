@@ -3,10 +3,10 @@ import Foundation
 import UIKit
 
 enum APISign {
-    static let salt = "m4n2hjPeYWkD6tFpqKF^3HO^h24P@idT"
+    static let signSalt = "m4n2hjPeYWkD6tFpqKF^3HO^h24P@idT"
 
     /// MD5( MD5(brand.ip.model.platform.timestamp.userKey.uuid) + SALT )
-    private static func generateSign(
+    static func generateSign(
         brand: String,
         ip: String = "0.0.0.0",
         model: String = "iPhone",
@@ -25,10 +25,10 @@ enum APISign {
             uuid.lowercased(),
         ].joined(separator: ".")
 
-        return md5(md5(raw) + salt)
+        return md5(md5(raw) + signSalt)
     }
 
-    private static func buildHeaders(
+    static func buildHeaders(
         brand: String,
         model: String = "iPhone",
         ip: String = "0.0.0.0",
@@ -72,7 +72,7 @@ enum APISign {
     }
 
     /// 与 JS `encodeURIComponent` 行为一致
-    private static func encodeURIComponent(_ string: String) -> String {
+     static func encodeURIComponent(_ string: String) -> String {
         var allowed = CharacterSet.alphanumerics
         allowed.insert(charactersIn: "-_.!~*'()")
         return string.addingPercentEncoding(withAllowedCharacters: allowed) ?? string
@@ -80,16 +80,16 @@ enum APISign {
 }
 
 enum APIDeviceInfo {
-    private static var uuid: String {
+     static var uuid: String {
         UIDevice.current.identifierForVendor?.uuidString.lowercased()
             ?? UUID().uuidString.lowercased()
     }
 
-    private static var brand: String {
+     static var brand: String {
         APISign.encodeURIComponent(UIDevice.current.model)
     }
 
-    private static var model: String {
+     static var model: String {
         UIDevice.current.model
     }
 }
