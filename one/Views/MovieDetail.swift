@@ -15,9 +15,7 @@ struct MovieDetailView: View {
             }
             .padding()
         }
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-        #endif
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: startPlayback)
         .onDisappear(perform: stopPlayback)
     }
