@@ -4,7 +4,7 @@ import Observation
 @Observable
 @MainActor
 final class FilmViewModel {
-    private(set) var videos: [VideoItem] = []
+    private(set) var films: [FilmItem] = []
     private(set) var isLoading = false
     private(set) var errorMessage: String?
 
@@ -20,7 +20,7 @@ final class FilmViewModel {
         defer { isLoading = false }
 
         do {
-            videos = try await service.fetchFilmList()
+            films = try await service.fetchFilmList()
         } catch {
             errorMessage = error.localizedDescription
         }

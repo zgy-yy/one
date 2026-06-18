@@ -21,19 +21,7 @@ struct VideoCard: View {
     private var cover: some View {
         Group {
             if let coverURL {
-                AsyncImage(url: coverURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    case .failure:
-                        placeholder
-                    default:
-                        placeholder
-                            .overlay { ProgressView() }
-                    }
-                }
+                EncryptedImageView(url: coverURL)
             } else {
                 placeholder
             }

@@ -2,12 +2,9 @@ import AVKit
 import SwiftUI
 
 struct MovieDetailView: View {
-    let video: VideoItem
+    let film: FilmItem
 
     @State private var player: AVPlayer?
-    let tagsList = [
-        "标签1", "标签2", "标签3", "动作", "科幻", "悬疑", "高清", "爱情", "喜剧", "动作", "科幻", "悬疑", "高清", "爱情", "喜剧",
-    ]
 
     var body: some View {
         ScrollView {
@@ -38,7 +35,7 @@ struct MovieDetailView: View {
 
     //标题
     var title: some View {
-        Text(video.title)
+        Text(film.resolvedTitle)
             .font(.title2.bold())
             .foregroundStyle(.primary)
             .lineLimit(2)
@@ -47,7 +44,7 @@ struct MovieDetailView: View {
     //标签
     var tags: some View {
         FlowLayout(spacing: 8, rowSpacing: 8) {
-            ForEach(tagsList, id: \.self) { tag in
+            ForEach(film.resolvedTags, id: \.self) { tag in
                 Tag(title: tag)
             }
         }
@@ -60,7 +57,7 @@ struct MovieDetailView: View {
             AVPlayerView(player: player)
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-        } else if video.playURL != nil {
+        } else if film.playURL != nil {
             RoundedRectangle(cornerRadius: 12)
                 .fill(.quaternary)
                 .aspectRatio(16 / 9, contentMode: .fill)
@@ -77,10 +74,10 @@ struct MovieDetailView: View {
     }
 
     private func startPlayback() {
-        guard let url = video.playURL else { return }
+        guard let url = film.playURL else { return }
         let player = AVPlayer(url: url)
         self.player = player
-        //        player.play()
+        player.play()
     }
 
     private func stopPlayback() {
@@ -91,14 +88,6 @@ struct MovieDetailView: View {
 
 #Preview {
     NavigationStack {
-        MovieDetailView(
-            video: VideoItem(
-                id: 1,
-                title: "示例视频",
-                img: "https://picsum.photos/400/225",
-                video:
-                    "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8"
-            )
-        )
+        MovieDetailView(film: .preview)
     }
 }

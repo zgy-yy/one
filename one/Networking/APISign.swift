@@ -72,7 +72,7 @@ enum APISign {
     }
 
     /// 与 JS `encodeURIComponent` 行为一致
-     static func encodeURIComponent(_ string: String) -> String {
+    static func encodeURIComponent(_ string: String) -> String {
         var allowed = CharacterSet.alphanumerics
         allowed.insert(charactersIn: "-_.!~*'()")
         return string.addingPercentEncoding(withAllowedCharacters: allowed) ?? string
@@ -80,16 +80,16 @@ enum APISign {
 }
 
 enum APIDeviceInfo {
-     static var uuid: String {
+    static var uuid: String {
         UIDevice.current.identifierForVendor?.uuidString.lowercased()
             ?? UUID().uuidString.lowercased()
     }
 
-     static var brand: String {
+    static var brand: String {
         APISign.encodeURIComponent(UIDevice.current.model)
     }
 
-     static var model: String {
+    static var model: String {
         UIDevice.current.model
     }
 }
@@ -100,19 +100,19 @@ struct APIAuthContext: Sendable {
     var ip: String
     var platform: String
     var appVersion: String
-    var brand: String?
-    var model: String?
-    var uuid: String?
+    var brand: String
+    var model: String
+    var uuid: String
 
     init(
-        userKey: String = "",
-        token: String = "",
-        ip: String = "0.0.0.0",
-        platform: String = "2",
+        userKey: String = APIConfig.userKey,
+        token: String = APIConfig.token,
+        ip: String = APIConfig.ip,
+        platform: String = APIConfig.platform,
         appVersion: String = APIConfig.appVersion,
-        brand: String? = nil,
-        model: String? = nil,
-        uuid: String? = nil
+        brand: String = APIConfig.brand,
+        model: String = APIConfig.model,
+        uuid: String = APIConfig.uuid
     ) {
         self.userKey = userKey
         self.token = token
@@ -126,12 +126,12 @@ struct APIAuthContext: Sendable {
 
     func signedHeaders(timestamp: String? = nil) -> [String: String] {
         APISign.buildHeaders(
-            brand: brand ?? APIDeviceInfo.brand,
-            model: model ?? APIDeviceInfo.model,
+            brand: brand,
+            model: model,
             ip: ip,
             platform: platform,
             appVersion: appVersion,
-            uuid: uuid ?? APIDeviceInfo.uuid,
+            uuid: uuid,
             userKey: userKey,
             token: token,
             timestamp: timestamp ?? String(Int(Date().timeIntervalSince1970))

@@ -37,7 +37,7 @@ struct DiscoverView: View {
     @ViewBuilder
     private var filmContent: some View {
         Group {
-            if viewModel.isLoading && viewModel.videos.isEmpty {
+            if viewModel.isLoading && viewModel.films.isEmpty {
                 ProgressView()
             } else if let errorMessage = viewModel.errorMessage {
                 ContentUnavailableView(
@@ -48,13 +48,13 @@ struct DiscoverView: View {
             } else {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 16) {
-                        ForEach(viewModel.videos) { video in
+                        ForEach(viewModel.films) { film in
                             NavigationLink {
-                                MovieDetailView(video: video)
+                                MovieDetailView(film: film)
                             } label: {
                                 VideoCard(
-                                    title: video.title,
-                                    coverURL: video.coverURL
+                                    title: film.resolvedTitle,
+                                    coverURL: film.thumbURL
                                 )
                             }
                             .buttonStyle(.plain)
@@ -69,10 +69,7 @@ struct DiscoverView: View {
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
         .onAppear {
-            print("hello")
-            if let encrypted = try? APICrypto.aesDecrypt("") {
-                print(encrypted)
-            }
+            print("hello", viewModel.films)
         }
     }
 
