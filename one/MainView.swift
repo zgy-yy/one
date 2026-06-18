@@ -13,11 +13,12 @@ struct MainView: View {
             Tab("首页", systemImage: "house") {
                 HomeView()
             }
-
             Tab("发现", systemImage: "safari") {
                 DiscoverView()
             }
-
+            Tab("点播", systemImage: "play.circle") {
+                OnDemandView()
+            }
             Tab("我的", systemImage: "person") {
                 ProfileView()
             }

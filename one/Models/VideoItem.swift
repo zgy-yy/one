@@ -6,9 +6,9 @@ struct VideoItem: Identifiable, Sendable {
     let img: String
     let video: String?
 
-    nonisolated var coverURL: URL? { URL(string: img) }
+    var coverURL: URL? { URL(string: img) }
 
-    nonisolated var playURL: URL? {
+    var playURL: URL? {
         if let video, let url = URL(string: video) {
             return url
         }
@@ -17,7 +17,7 @@ struct VideoItem: Identifiable, Sendable {
         return URL(string: samples[(id - 1) % samples.count])
     }
 
-    private nonisolated static let samplePlayURLs = [
+    private static let samplePlayURLs = [
         "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8",
         "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8",
         "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
@@ -29,7 +29,7 @@ extension VideoItem: Decodable {
         case id, title, img, video
     }
 
-    nonisolated init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
         title = try container.decode(String.self, forKey: .title)
