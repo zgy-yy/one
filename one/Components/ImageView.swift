@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct EncryptedImageView: View {
+struct ImageView: View {
     let url: URL
     let maxPixelSize: Int?
 
@@ -41,10 +41,12 @@ struct EncryptedImageView: View {
     private func imageContent(_ image: UIImage) -> some View {
         if image.isAnimatedGIF {
             AnimatedImageView(image: image)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
@@ -64,7 +66,7 @@ struct EncryptedImageView: View {
         failed = false
 
         do {
-            image = try await APICrypto.loadDecryptedImage(
+            image = try await APIClient.loadImage(
                 from: url,
                 maxPixelSize: maxPixelSize
             )

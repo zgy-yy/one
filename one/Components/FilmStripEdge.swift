@@ -5,7 +5,7 @@ struct FilmStripEdge: View {
     var stripHeight: CGFloat = 20
     var holeSize: CGFloat = 7
     var holeSpacing: CGFloat = 10
-    var filmColor: Color = Color.black.opacity(0.6)
+    var filmColor: Color = Color.black.opacity(0.3)
 
     var body: some View {
         Canvas { context, size in

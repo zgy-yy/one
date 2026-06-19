@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 private struct APIEnvelope<U: Decodable>: Decodable {
     let data: U?
@@ -86,6 +87,41 @@ struct APIClient: APIRequesting, Sendable {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }
+
+    static func loadImage(from url: URL, maxPixelSize: Int? = nil) async throws -> UIImage {
+        try await ImageCache.load(from: url, maxPixelSize: maxPixelSize) {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            try Task.checkCancellation()
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                (200...299).contains(httpResponse.statusCode)
+            else {
+                throw APICryptoError.invalidResponse
+            }
+
+            if let image = GIFImage.makeImage(from: data, maxPixelSize: maxPixelSize) {
+                return image
+            }
+
+            let cipherBase64: String
+            if let text = String(data: data, encoding: .utf8)?
+                .trimmingCharacters(in: .whitespacesAndNewlines),
+                !text.isEmpty
+            {
+                cipherBase64 = text
+            } else {
+                cipherBase64 = data.base64EncodedString()
+            }
+
+            let imageData = try APICrypto.decryptImageData(cipherBase64)
+            try Task.checkCancellation()
+
+            guard let image = GIFImage.makeImage(from: imageData, maxPixelSize: maxPixelSize) else {
+                throw APICryptoError.invalidImageData
+            }
+            return image
+        }
+    }
 }
 
 func toFormBody(_ data: [String: String]) -> String {
@@ -105,7 +141,7 @@ extension APIError: LocalizedError {
         case .invalidResponse:
             "服务器响应异常"
         case .httpStatus(let code):
-            "服务器响应异常（HTTP \(code)）"
+                "服务器响应异常（HTTP \(code)）"
+            }
         }
     }
-}

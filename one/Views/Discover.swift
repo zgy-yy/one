@@ -2,27 +2,22 @@ import SwiftUI
 
 struct DiscoverView: View {
     @State private var viewModel = FilmViewModel()
-    @State private var category: HomeCategory = .film
+    @State private var category: DiscoveryCategory = .film
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12),
-    ]
+    private let categoryBarHeight: CGFloat = 44
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 0) {
-                HomeCategoryBar(selection: $category)
-                    .padding(.vertical, 8)
-
-                categoryPage(for: category)
-            }
-            .toolbar(.hidden, for: .navigationBar)
+            ZStack(alignment: .top) {
+                categoryPage(for: category).padding(.top, 66)
+                DiscoveryCategoryBar(selection: $category, height: 66)
+            }.ignoresSafeArea(.container, edges: .top)
         }
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     @ViewBuilder
-    private func categoryPage(for category: HomeCategory) -> some View {
+    private func categoryPage(for category: DiscoveryCategory) -> some View {
         switch category {
         case .film:
             filmContent
@@ -44,22 +39,28 @@ struct DiscoverView: View {
                 )
             } else {
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: 16) {
-                        ForEach(viewModel.films) { film in
-                            NavigationLink {
-                                MovieDetailView(film: film)
-                            } label: {
-                                FilmCard(
-                                    title: film.resolvedTitle,
-                                    coverURL: film.thumbURL
-                                )
-                            }
-                            .buttonStyle(.plain)
+                    ForEach(viewModel.films) { film in
+                        NavigationLink {
+                            MovieDetailView(film: film)
+                        } label: {
+                            FilmCard(
+                                title: film.resolvedTitle,
+                                author: film.author ?? "",
+                                viewCount: film.views ?? 0,
+                                likeCount: film.likeNumber ?? 0,
+                                publishedAt: film.publishedAt ?? "",
+                                coverURL: film.coverURL
+                            )
+                            .frame(height: 90)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 12)
                         }
+                        .buttonStyle(.plain)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+
                 }
+                .safeAreaPadding(.top, categoryBarHeight)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -67,13 +68,14 @@ struct DiscoverView: View {
         .task { await viewModel.load() }
     }
 
-    private func placeholderContent(for category: HomeCategory) -> some View {
+    private func placeholderContent(for category: DiscoveryCategory) -> some View {
         ContentUnavailableView(
             category.rawValue,
             systemImage: category.icon,
             description: Text("暂无内容")
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .safeAreaPadding(.top, categoryBarHeight)
     }
 }
 

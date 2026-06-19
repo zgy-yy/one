@@ -25,12 +25,15 @@ struct MovieDetailView: View {
     //顶部背景
     var topBg: some View {
         ZStack(alignment: .bottom) {
-            Rectangle()
-                .fill(.red)
-
-            FilmStripEdge(stripHeight: 18, holeSize: 10, filmColor: Color.black.opacity(0.6))
+            if let coverURL = film.coverURL {
+                ImageView(url: coverURL)
+            } else {
+                Rectangle()
+                    .fill(.quaternary)
+            }
+            FilmStripEdge(stripHeight: 18, holeSize: 10, filmColor: Color.black.opacity(0.5))
         }
-        .frame(height: 220)
+        .frame(height: 260)
     }
 
     //标题
@@ -55,7 +58,7 @@ struct MovieDetailView: View {
     private var playerSection: some View {
         if let player {
             AVPlayerView(player: player)
-                .aspectRatio(16 / 9, contentMode: .fit)
+                .aspectRatio(16 / 9, contentMode: .fill)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         } else if film.playURL != nil {
             RoundedRectangle(cornerRadius: 12)
