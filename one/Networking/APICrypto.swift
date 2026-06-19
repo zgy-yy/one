@@ -63,9 +63,11 @@ enum APICrypto {
         return data
     }
 
-    static func loadDecryptedImage(from url: URL) async throws -> UIImage {
-        try await ImageCache.load(from: url) {
+    static func loadDecryptedImage(from url: URL, maxPixelSize: Int? = nil) async throws -> UIImage {
+        try await ImageCache.load(from: url, maxPixelSize: maxPixelSize) {
             let (data, response) = try await URLSession.shared.data(from: url)
+            try Task.checkCancellation()
+
             guard let httpResponse = response as? HTTPURLResponse,
                 (200...299).contains(httpResponse.statusCode)
             else {
@@ -83,7 +85,9 @@ enum APICrypto {
             }
 
             let imageData = try decryptImageData(cipherBase64)
-            guard let image = GIFImage.makeImage(from: imageData) else {
+            try Task.checkCancellation()
+
+            guard let image = GIFImage.makeImage(from: imageData, maxPixelSize: maxPixelSize) else {
                 throw APICryptoError.invalidImageData
             }
             return image

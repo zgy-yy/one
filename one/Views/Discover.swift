@@ -11,26 +11,23 @@ struct DiscoverView: View {
 
     var body: some View {
         NavigationStack {
-            categoryContent
-                .navigationTitle("On-demand")
-                .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        HomeCategoryBar(selection: $category)
-                            .frame(maxWidth: 280)
-                    }
-                }
+            VStack(alignment: .leading, spacing: 0) {
+                HomeCategoryBar(selection: $category)
+                    .padding(.vertical, 8)
+
+                categoryPage(for: category)
+            }
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
 
     @ViewBuilder
-    private var categoryContent: some View {
+    private func categoryPage(for category: HomeCategory) -> some View {
         switch category {
         case .film:
             filmContent
-        case .article:
-            placeholderContent(title: "图文", icon: "photo.on.rectangle")
-        case .text:
-            placeholderContent(title: "文本", icon: "doc.text")
+        default:
+            placeholderContent(for: category)
         }
     }
 
@@ -52,7 +49,7 @@ struct DiscoverView: View {
                             NavigationLink {
                                 MovieDetailView(film: film)
                             } label: {
-                                VideoCard(
+                                FilmCard(
                                     title: film.resolvedTitle,
                                     coverURL: film.thumbURL
                                 )
@@ -68,15 +65,12 @@ struct DiscoverView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
-        .onAppear {
-            print("hello", viewModel.films)
-        }
     }
 
-    private func placeholderContent(title: String, icon: String) -> some View {
+    private func placeholderContent(for category: HomeCategory) -> some View {
         ContentUnavailableView(
-            title,
-            systemImage: icon,
+            category.rawValue,
+            systemImage: category.icon,
             description: Text("暂无内容")
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)

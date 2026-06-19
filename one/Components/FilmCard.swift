@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct VideoCard: View {
+struct FilmCard: View {
     let title: String
     var coverURL: URL? = nil
 
@@ -21,7 +21,7 @@ struct VideoCard: View {
     private var cover: some View {
         Group {
             if let coverURL {
-                EncryptedImageView(url: coverURL)
+                EncryptedImageView(url: coverURL, maxPixelSize: 480)
             } else {
                 placeholder
             }
@@ -45,7 +45,7 @@ struct VideoCard: View {
 }
 
 #Preview {
-    VideoCard(
+    FilmCard(
         title: "这是一个视频标题，可能会比较长所以限制两行显示",
         coverURL: URL(string: "https://picsum.photos/400/225")
     )
