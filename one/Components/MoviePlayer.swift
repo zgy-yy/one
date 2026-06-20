@@ -6,6 +6,9 @@ struct MoviePlayer: View {
     let url: URL
     let title: String
 
+    /// 与父视图共享全屏状态，供 AnyLayout 切换布局
+    @Binding var isFullScreen: Bool
+
     /// 播放器协调器，统一管理 KSVideoPlayer 的播放、seek、暂停等操作
     @StateObject private var coordinator = KSVideoPlayer.Coordinator()
     @State private var options = KSOptions()
@@ -17,13 +20,11 @@ struct MoviePlayer: View {
     /// 拖动进度条时为 true，此时忽略 onPlay 回调，避免滑块跳动
     @State private var isSeeking = false
     @State private var seekingTime: TimeInterval = 0
-    @State private var isFullScreen = false
 
     var body: some View {
         GeometryReader { geometry in
             playerSurface(size: geometry.size)
         }
-        // 全屏时忽略安全区域，隐藏状态栏和 Home 指示条
         .ignoresSafeArea(isFullScreen ? .all : .keyboard)
         .statusBarHidden(isFullScreen)
         .persistentSystemOverlays(isFullScreen ? .hidden : .automatic)
@@ -113,7 +114,7 @@ struct MoviePlayer: View {
                         } set: { newValue in
                             seekingTime = newValue
                         },
-                        in: 0 ... max(totalTime, 1),
+                        in: 0...max(totalTime, 1),
                         onEditingChanged: { editing in
                             isSeeking = editing
                             if editing {
@@ -211,11 +212,14 @@ struct MoviePlayer: View {
 }
 
 #Preview {
+    @Previewable @State var isFullScreen = false
+
     MoviePlayer(
         url: URL(
             string:
                 "https://dlmk.bx7qxb.com/one/compress/decry/vd/20260607/MmI0ZDgwMGUyZ/203216/1920_1080/aac/h265/mp4/decrypt/GFkM.mp4"
         )!,
-        title: "Rick Astley - Never Gonna Give You Up"
+        title: "Rick Astley - Never Gonna Give You Up",
+        isFullScreen: $isFullScreen
     )
 }

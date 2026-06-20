@@ -4,19 +4,44 @@ import SwiftUI
 struct MovieDetailView: View {
     let film: FilmItem
 
+    @State private var isFullScreen = false
+
     var body: some View {
+        // 小窗：VStack 滚动内容 + 底部播放器；全屏：ZStack 播放器覆盖全屏
+        let layout =
+            isFullScreen
+            ? AnyLayout(ZStackLayout())
+            : AnyLayout(VStackLayout(spacing: 0))
+
         ScrollView {
-            topBg
-            VStack(alignment: .leading, spacing: 16) {
+            layout {
+                topBg
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        if let vol = film.vol {
+                            Text("第 \(vol) 期")
+                        }
+                        Spacer()
+                        Text(film.publishedAt?.resolvedPublishedDate ?? "")
+                    }
+                    title
+                    HStack {
+                        Text("出品 / " + (film.author ?? ""))
+                        Spacer()
+                        Image(systemName: "film.stack.fill")
+                            .font(.title3)
+                    }
+                    tags
+                }
+                .padding()
                 playerSection
-                title
-                tags
+
             }
-            .padding()
         }
         .background(Color(uiColor: .systemBackground))
-        .toolbar(.visible, for: .navigationBar)
-        .ignoresSafeArea(.container, edges: [.top, .bottom])
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarBackButtonHidden(isFullScreen)
+        .ignoresSafeArea(isFullScreen ? .all : .container, edges: [.top, .bottom])
     }
 
     //顶部背景
@@ -51,6 +76,7 @@ struct MovieDetailView: View {
             .lineLimit(2)
             .multilineTextAlignment(.leading)
     }
+
     //标签
     var tags: some View {
         FlowLayout(spacing: 8, rowSpacing: 8) {
@@ -64,9 +90,20 @@ struct MovieDetailView: View {
     @ViewBuilder
     private var playerSection: some View {
         if let playURL = film.playURL {
-            MoviePlayer(url: playURL, title: film.resolvedTitle)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .accessibilityLabel(Text(playURL.lastPathComponent))
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let fullWidth = scene.screen.bounds.width
+                let fullHeight = scene.screen.bounds.height
+                MoviePlayer(url: playURL, title: film.resolvedTitle, isFullScreen: $isFullScreen)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .frame(
+                        width: isFullScreen ? fullWidth : nil,
+                        height: isFullScreen ? fullHeight : nil
+                    )
+                    .ignoresSafeArea(.container, edges: [.top, .bottom])
+                    .aspectRatio(isFullScreen ? nil : 16 / 9, contentMode: .fit)
+                    .padding(isFullScreen ? 0 : 16)
+            }
+
         } else {
             ContentUnavailableView(
                 "无法播放",

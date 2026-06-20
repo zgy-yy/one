@@ -24,10 +24,6 @@ struct FilmCard: View {
         .contentShape(Rectangle())
     }
 
-    private var publishedDate: String {
-        publishedAt.split(separator: " ").first.map(String.init) ?? publishedAt
-    }
-
     @ViewBuilder
     private var cover: some View {
         Group {
@@ -63,7 +59,7 @@ struct FilmCard: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
                 .multilineTextAlignment(.leading)
-            Text(publishedDate)
+            Text(publishedAt.resolvedPublishedDate)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
             HStack(spacing: 8) {

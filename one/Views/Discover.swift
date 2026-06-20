@@ -11,7 +11,7 @@ struct DiscoverView: View {
         NavigationStack {
             ZStack(alignment: .top) {
                 categoryPages
-                DiscoveryCategoryBar(
+                CategoryBar(
                     selection: $category, height: categoryBarHeight,
                 )
                 .zIndex(1)
