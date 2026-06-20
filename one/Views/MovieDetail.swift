@@ -65,7 +65,6 @@ struct MovieDetailView: View {
     private var playerSection: some View {
         if let playURL = film.playURL {
             MoviePlayer(url: playURL, title: film.resolvedTitle)
-                .aspectRatio(16 / 9, contentMode: .fill)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .accessibilityLabel(Text(playURL.lastPathComponent))
         } else {
