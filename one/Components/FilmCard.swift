@@ -1,3 +1,4 @@
+import SDWebImageSwiftUI
 import SwiftUI
 
 struct FilmCard: View {
@@ -9,47 +10,18 @@ struct FilmCard: View {
     var coverURL: URL? = nil
 
     var body: some View {
-        HStack(spacing: 2) {
-            cover
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-                    .lineSpacing(2)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+        GeometryReader { proxy in
+            let coverHeight = proxy.size.height
+            let coverWidth = coverHeight * 16 / 9
 
-                Text("出品 / " + author)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .multilineTextAlignment(.leading)
-                Text(publishedDate)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                HStack(spacing: 8) {
-                    Image(systemName: "eye")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(viewCount.formatted())
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.leading)
-                    Image(systemName: "heart")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.leading)
-                    Text(likeCount.formatted())
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.leading)
-                }
+            HStack(spacing: 8) {
+                cover
+                    .frame(width: coverWidth, height: coverHeight)
+                info
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
     }
 
     private var publishedDate: String {
@@ -58,19 +30,62 @@ struct FilmCard: View {
 
     @ViewBuilder
     private var cover: some View {
-        GeometryReader { proxy in
-            let height = proxy.size.height
-            let width = height * 16 / 9
-
-            Group {
-                if let coverURL {
-                    ImageView(url: coverURL, maxPixelSize: 480)
-                } else {
-                    placeholder
+        Group {
+            if let coverURL {
+                GeometryReader { proxy in
+                    WebImage(url: coverURL)
+                        .resizable()
+                        .indicator(.activity)
+                        .transition(.fade(duration: 0.2))
+                        .scaledToFill()
+                        .frame(width: proxy.size.width, height: proxy.size.height)
                 }
+            } else {
+                placeholder
             }
-            .frame(width: width, height: height)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipped()
+        .allowsHitTesting(false)
+    }
+
+    private var info: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+                .lineSpacing(2)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+
+            Text("出品 / " + author)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .multilineTextAlignment(.leading)
+            Text(publishedDate)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            HStack(spacing: 8) {
+                Image(systemName: "eye")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(viewCount.formatted())
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.leading)
+                Image(systemName: "heart")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.leading)
+                Text(likeCount.formatted())
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.leading)
+            }
         }
     }
 
@@ -89,6 +104,7 @@ struct FilmCard: View {
         publishedAt: "2026-06-18 00:00:00",
         coverURL: URL(string: "https://imgpw807.s7n7ue8.com/storage/thumb/52971/6a3406e8278a1.gif")
     )
-    .frame(maxWidth: .infinity, maxHeight: 90)
+    .frame(maxWidth: .infinity)
+    .frame(height: 90)
     .padding()
 }

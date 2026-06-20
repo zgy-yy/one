@@ -2,8 +2,8 @@ import Foundation
 
 enum APIConfig: Sendable {
     nonisolated static let baseURL = URL(string: "https://api.apubis.com")!
-    nonisolated static let mediaURL = URL(string: "https://img807.hkq57tt.com")!
-    nonisolated static let imageURL = URL(string: "https://jmt58.hynybzh.com")!
+    nonisolated static let mediaURL = URL(string: "https://dlmk.upmf83.com")!
+    nonisolated static let imageURL = URL(string: "https://imgpw807.2u7qzt7.com")!
     nonisolated static let appVersion = "2.6.3.1"
     nonisolated static let uuid = "8b48f139-78c2-46b8-8a04-ce4d997ae01a"
     nonisolated static let userKey = "950a04a4ce3f2fc24d35759589e86907"

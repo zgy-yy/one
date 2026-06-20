@@ -1,3 +1,4 @@
+import SDWebImageSwiftUI
 import SwiftUI
 
 struct VideoCard: View {
@@ -21,7 +22,14 @@ struct VideoCard: View {
     private var cover: some View {
         Group {
             if let coverURL {
-                ImageView(url: coverURL, maxPixelSize: 480)
+                GeometryReader { proxy in
+                    WebImage(url: coverURL)
+                        .resizable()
+                        .indicator(.activity)
+                        .transition(.fade(duration: 0.2))
+                        .scaledToFill()
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                }
             } else {
                 placeholder
             }

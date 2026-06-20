@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum DiscoveryCategory: String, CaseIterable, Identifiable {
+enum DiscoveryCategory: String, CaseIterable, Identifiable, Hashable {
     case article = "图文"
     case text = "阅读"
     case film = "影视"
@@ -25,59 +25,23 @@ enum DiscoveryCategory: String, CaseIterable, Identifiable {
 struct DiscoveryCategoryBar: View {
     @Binding var selection: DiscoveryCategory
 
-    @Namespace private var indicator
-    var height: CGFloat = 16
-    var barHeight: CGFloat = 36
+    var height: CGFloat = 96
 
     var body: some View {
         GlassEffectContainer {
-            Color.white.opacity(0)
-                .frame(height: max(height - barHeight, 0))
-            HStack(spacing: 2) {
+            Spacer()
+            Picker("分类", selection: $selection) {
                 ForEach(DiscoveryCategory.allCases) { category in
-                    categoryButton(category)
+                    Text(category.rawValue)
+                        .tag(category)
                 }
             }
-            .frame(height: barHeight)
-            .glassEffect(.clear, in: .capsule)
+            .pickerStyle(.segmented)
+            .padding()
         }
-        .padding()
-        .glassEffect(.regular, in: .rect(cornerRadius: 18))
-
-    }
-
-    private func categoryButton(_ category: DiscoveryCategory) -> some View {
-        let isSelected = selection == category
-
-        return Button {
-            withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
-                selection = category
-            }
-        } label: {
-            Text(category.rawValue)
-                .font(.caption.weight(isSelected ? .semibold : .regular))
-                .foregroundStyle(
-                    isSelected ? Color(uiColor: .label) : Color(uiColor: .secondaryLabel)
-                )
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-                .frame(maxWidth: .infinity)
-                .frame(height: barHeight - 12)
-                .background {
-                    if isSelected {
-                        selectedBackground
-                    }
-                }
-
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var selectedBackground: some View {
-        Capsule()
-            .fill(Color(uiColor: .systemBackground).opacity(0.58))
-            .glassEffectID("indicator", in: indicator)
-            .matchedGeometryEffect(id: "indicator", in: indicator)
+        .frame(height: height)
+        .glassEffect(.clear, in: .rect(cornerRadius: 18))
+        .ignoresSafeArea(.container, edges: .top)
     }
 }
 
